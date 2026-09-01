@@ -201,7 +201,7 @@ object LogAnalysis {
 
     val responseTimeStats = typedLogDF
       .agg(
-        avg("response_time")
+        round(avg("response_time"), 2)
           .alias("average_response_time"),
 
         min("response_time")
@@ -223,7 +223,7 @@ object LogAnalysis {
     val responseTimeByURL = typedLogDF
       .groupBy("url")
       .agg(
-        avg("response_time")
+        round(avg("response_time"), 2)
           .alias("average_response_time"),
 
         min("response_time")
@@ -268,7 +268,7 @@ object LogAnalysis {
         count("*")
           .alias("total_requests"),
 
-        avg("response_time")
+        round(avg("response_time"), 2)
           .alias("average_response_time"),
 
         min("response_time")
@@ -390,28 +390,166 @@ object LogAnalysis {
 
       // Successful HTTP request
       if (status >= 200 && status < 400) {
-
         successfulRequestsAccumulator.add(1)
       }
 
 
-      // Error log
+      // Error request
       if (level == "ERROR") {
-
         errorRequestsAccumulator.add(1)
       }
 
 
       // Slow request
       if (responseTime >= broadcastThreshold.value) {
-
         slowRequestsAccumulator.add(1)
       }
     }
 
 
     // --------------------------------------------------
-    // 23. ACCUMULATOR SUMMARY
+    // 23. SPARK SQL ANALYSIS
+    // --------------------------------------------------
+
+    println("\n===== SPARK SQL ANALYSIS =====")
+
+    typedLogDF.createOrReplaceTempView(
+      "application_logs"
+    )
+
+
+    // --------------------------------------------------
+    // SQL 1: ERROR LOGS
+    // --------------------------------------------------
+
+    println("\n===== SQL ERROR LOGS =====")
+
+    val sqlErrors = spark.sql(
+      """
+        SELECT
+          timestamp,
+          level,
+          ip,
+          url,
+          status,
+          response_time
+        FROM application_logs
+        WHERE level = 'ERROR'
+        ORDER BY timestamp
+      """
+    )
+
+    sqlErrors.show(false)
+
+
+    // --------------------------------------------------
+    // SQL 2: REQUEST COUNT BY URL
+    // --------------------------------------------------
+
+    println("\n===== SQL REQUEST COUNT BY URL =====")
+
+    val sqlURLCount = spark.sql(
+      """
+        SELECT
+          url,
+          COUNT(*) AS total_requests
+        FROM application_logs
+        GROUP BY url
+        ORDER BY total_requests DESC
+      """
+    )
+
+    sqlURLCount.show(false)
+
+
+    // --------------------------------------------------
+    // SQL 3: AVERAGE RESPONSE TIME BY URL
+    // --------------------------------------------------
+
+    println("\n===== SQL AVERAGE RESPONSE TIME BY URL =====")
+
+    val sqlAverageResponse = spark.sql(
+      """
+        SELECT
+          url,
+          ROUND(AVG(response_time), 2)
+            AS average_response_time
+        FROM application_logs
+        GROUP BY url
+        ORDER BY average_response_time DESC
+      """
+    )
+
+    sqlAverageResponse.show(false)
+
+
+    // --------------------------------------------------
+    // SQL 4: HTTP STATUS ANALYSIS
+    // --------------------------------------------------
+
+    println("\n===== SQL HTTP STATUS ANALYSIS =====")
+
+    val sqlStatusAnalysis = spark.sql(
+      """
+        SELECT
+          status,
+          COUNT(*) AS total_requests
+        FROM application_logs
+        GROUP BY status
+        ORDER BY status
+      """
+    )
+
+    sqlStatusAnalysis.show(false)
+
+
+    // --------------------------------------------------
+    // SQL 5: IP-WISE REQUEST ANALYSIS
+    // --------------------------------------------------
+
+    println("\n===== SQL IP-WISE REQUEST ANALYSIS =====")
+
+    val sqlIPAnalysis = spark.sql(
+      """
+        SELECT
+          ip,
+          COUNT(*) AS total_requests,
+          ROUND(AVG(response_time), 2)
+            AS average_response_time
+        FROM application_logs
+        GROUP BY ip
+        ORDER BY total_requests DESC
+      """
+    )
+
+    sqlIPAnalysis.show(false)
+
+
+    // --------------------------------------------------
+    // SQL 6: SLOW REQUESTS
+    // --------------------------------------------------
+
+    println("\n===== SQL SLOW REQUESTS =====")
+
+    val sqlSlowRequests = spark.sql(
+      s"""
+        SELECT
+          timestamp,
+          ip,
+          url,
+          status,
+          response_time
+        FROM application_logs
+        WHERE response_time >= ${broadcastThreshold.value}
+        ORDER BY response_time DESC
+      """
+    )
+
+    sqlSlowRequests.show(false)
+
+
+    // --------------------------------------------------
+    // 24. ACCUMULATOR SUMMARY
     // --------------------------------------------------
 
     println("\n===== ACCUMULATOR SUMMARY =====")
@@ -434,7 +572,7 @@ object LogAnalysis {
 
 
     // --------------------------------------------------
-    // 24. FINAL PROJECT SUMMARY
+    // 25. FINAL PROJECT SUMMARY
     // --------------------------------------------------
 
     println("\n===== FINAL PROJECT SUMMARY =====")
@@ -461,7 +599,7 @@ object LogAnalysis {
 
 
     // --------------------------------------------------
-    // 25. PROJECT COMPLETED
+    // 26. PROJECT COMPLETED
     // --------------------------------------------------
 
     println("\n===== LOG ANALYSIS COMPLETED =====")
