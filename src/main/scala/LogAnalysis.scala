@@ -77,18 +77,158 @@ object LogAnalysis {
 
 
     // --------------------------------------------------
-    // 6. TOTAL REQUESTS
+    // 6. DATA QUALITY ANALYSIS
+    // --------------------------------------------------
+
+    println("\n===== DATA QUALITY ANALYSIS =====")
+
+    val dataQualityTotal = typedLogDF.count()
+
+    println(
+      s"Total Records Checked: $dataQualityTotal"
+    )
+
+
+    // NULL VALUE CHECK
+
+    println("\n----- NULL VALUE CHECK -----")
+
+    val nullCount = typedLogDF.select(
+      sum(
+        when(col("timestamp").isNull, 1)
+          .otherwise(0)
+      ).alias("timestamp_nulls"),
+
+      sum(
+        when(col("level").isNull, 1)
+          .otherwise(0)
+      ).alias("level_nulls"),
+
+      sum(
+        when(col("ip").isNull, 1)
+          .otherwise(0)
+      ).alias("ip_nulls"),
+
+      sum(
+        when(col("url").isNull, 1)
+          .otherwise(0)
+      ).alias("url_nulls"),
+
+      sum(
+        when(col("status").isNull, 1)
+          .otherwise(0)
+      ).alias("status_nulls"),
+
+      sum(
+        when(col("response_time").isNull, 1)
+          .otherwise(0)
+      ).alias("response_time_nulls")
+    )
+
+    nullCount.show(false)
+
+
+    // DUPLICATE RECORD CHECK
+
+    val distinctRecordCount =
+      typedLogDF.distinct().count()
+
+    val duplicateCount =
+      dataQualityTotal - distinctRecordCount
+
+    println(
+      s"Duplicate Records: $duplicateCount"
+    )
+
+
+    // INVALID HTTP STATUS CHECK
+
+    val invalidStatusCount = typedLogDF
+      .filter(
+        col("status").isNull ||
+        col("status") < 100 ||
+        col("status") > 599
+      )
+      .count()
+
+    println(
+      s"Invalid HTTP Status Records: $invalidStatusCount"
+    )
+
+
+    // INVALID RESPONSE TIME CHECK
+
+    val invalidResponseTimeCount = typedLogDF
+      .filter(
+        col("response_time").isNull ||
+        col("response_time") < 0
+      )
+      .count()
+
+    println(
+      s"Invalid Response Time Records: $invalidResponseTimeCount"
+    )
+
+
+    // REQUIRED FIELD CHECK
+
+    val invalidRequiredFieldCount = typedLogDF
+      .filter(
+        col("timestamp").isNull ||
+        col("level").isNull ||
+        col("ip").isNull ||
+        col("url").isNull
+      )
+      .count()
+
+    println(
+      s"Missing Required Field Records: $invalidRequiredFieldCount"
+    )
+
+
+    // VALID RECORD CHECK
+
+    val validRecordCount = typedLogDF
+      .filter(
+        col("timestamp").isNotNull &&
+        col("level").isNotNull &&
+        col("ip").isNotNull &&
+        col("url").isNotNull &&
+        col("status").isNotNull &&
+        col("status") >= 100 &&
+        col("status") <= 599 &&
+        col("response_time").isNotNull &&
+        col("response_time") >= 0
+      )
+      .count()
+
+    val invalidRecordCount =
+      dataQualityTotal - validRecordCount
+
+    println(
+      s"Valid Records: $validRecordCount"
+    )
+
+    println(
+      s"Invalid Records: $invalidRecordCount"
+    )
+
+
+    // --------------------------------------------------
+    // 7. TOTAL REQUESTS
     // --------------------------------------------------
 
     println("\n===== TOTAL REQUESTS =====")
 
     val totalRequests = typedLogDF.count()
 
-    println(s"Total Requests: $totalRequests")
+    println(
+      s"Total Requests: $totalRequests"
+    )
 
 
     // --------------------------------------------------
-    // 7. LOG LEVEL ANALYSIS
+    // 8. LOG LEVEL ANALYSIS
     // --------------------------------------------------
 
     println("\n===== LOG LEVEL ANALYSIS =====")
@@ -102,7 +242,7 @@ object LogAnalysis {
 
 
     // --------------------------------------------------
-    // 8. HTTP STATUS ANALYSIS
+    // 9. HTTP STATUS ANALYSIS
     // --------------------------------------------------
 
     println("\n===== HTTP STATUS ANALYSIS =====")
@@ -116,23 +256,28 @@ object LogAnalysis {
 
 
     // --------------------------------------------------
-    // 9. ERROR LOG ANALYSIS
+    // 10. ERROR LOG ANALYSIS
     // --------------------------------------------------
 
     println("\n===== ERROR LOGS =====")
 
     val errorLogs = typedLogDF
-      .filter(col("level") === "ERROR")
+      .filter(
+        col("level") === "ERROR"
+      )
 
     errorLogs.show(false)
 
-    val totalErrorLogs = errorLogs.count()
+    val totalErrorLogs =
+      errorLogs.count()
 
-    println(s"Total Error Logs: $totalErrorLogs")
+    println(
+      s"Total Error Logs: $totalErrorLogs"
+    )
 
 
     // --------------------------------------------------
-    // 10. UNIQUE IP ADDRESSES
+    // 11. UNIQUE IP ADDRESSES
     // --------------------------------------------------
 
     println("\n===== UNIQUE IP ADDRESSES =====")
@@ -144,13 +289,16 @@ object LogAnalysis {
 
     uniqueIPs.show(false)
 
-    val uniqueIPCount = uniqueIPs.count()
+    val uniqueIPCount =
+      uniqueIPs.count()
 
-    println(s"Unique IP Count: $uniqueIPCount")
+    println(
+      s"Unique IP Count: $uniqueIPCount"
+    )
 
 
     // --------------------------------------------------
-    // 11. BROADCAST VARIABLE
+    // 12. BROADCAST VARIABLE
     // --------------------------------------------------
 
     val slowRequestThreshold = 400
@@ -168,7 +316,7 @@ object LogAnalysis {
 
 
     // --------------------------------------------------
-    // 12. URL ANALYSIS
+    // 13. URL ANALYSIS
     // --------------------------------------------------
 
     println("\n===== URL ANALYSIS =====")
@@ -182,7 +330,7 @@ object LogAnalysis {
 
 
     // --------------------------------------------------
-    // 13. URL + STATUS ANALYSIS
+    // 14. URL + STATUS ANALYSIS
     // --------------------------------------------------
 
     println("\n===== URL + STATUS ANALYSIS =====")
@@ -196,15 +344,17 @@ object LogAnalysis {
 
 
     // --------------------------------------------------
-    // 14. RESPONSE TIME STATISTICS
+    // 15. RESPONSE TIME STATISTICS
     // --------------------------------------------------
 
     println("\n===== RESPONSE TIME STATISTICS =====")
 
     val responseTimeStats = typedLogDF
       .agg(
-        round(avg("response_time"), 2)
-          .alias("average_response_time"),
+        round(
+          avg("response_time"),
+          2
+        ).alias("average_response_time"),
 
         min("response_time")
           .alias("minimum_response_time"),
@@ -217,7 +367,7 @@ object LogAnalysis {
 
 
     // --------------------------------------------------
-    // 15. RESPONSE TIME BY URL
+    // 16. RESPONSE TIME BY URL
     // --------------------------------------------------
 
     println("\n===== RESPONSE TIME BY URL =====")
@@ -225,8 +375,10 @@ object LogAnalysis {
     val responseTimeByURL = typedLogDF
       .groupBy("url")
       .agg(
-        round(avg("response_time"), 2)
-          .alias("average_response_time"),
+        round(
+          avg("response_time"),
+          2
+        ).alias("average_response_time"),
 
         min("response_time")
           .alias("minimum_response_time"),
@@ -234,13 +386,15 @@ object LogAnalysis {
         max("response_time")
           .alias("maximum_response_time")
       )
-      .orderBy(desc("average_response_time"))
+      .orderBy(
+        desc("average_response_time")
+      )
 
     responseTimeByURL.show(false)
 
 
     // --------------------------------------------------
-    // 16. SLOW REQUESTS
+    // 17. SLOW REQUESTS
     // --------------------------------------------------
 
     println("\n===== SLOW REQUESTS =====")
@@ -250,11 +404,14 @@ object LogAnalysis {
         col("response_time") >=
           broadcastThreshold.value
       )
-      .orderBy(desc("response_time"))
+      .orderBy(
+        desc("response_time")
+      )
 
     slowRequests.show(false)
 
-    val slowRequestCount = slowRequests.count()
+    val slowRequestCount =
+      slowRequests.count()
 
     println(
       s"Slow Request Count: $slowRequestCount"
@@ -262,10 +419,12 @@ object LogAnalysis {
 
 
     // --------------------------------------------------
-    // 17. IP-WISE REQUEST ANALYSIS
+    // 18. IP-WISE REQUEST ANALYSIS
     // --------------------------------------------------
 
-    println("\n===== IP-WISE REQUEST ANALYSIS =====")
+    println(
+      "\n===== IP-WISE REQUEST ANALYSIS ====="
+    )
 
     val ipRequestAnalysis = typedLogDF
       .groupBy("ip")
@@ -273,8 +432,10 @@ object LogAnalysis {
         count("*")
           .alias("total_requests"),
 
-        round(avg("response_time"), 2)
-          .alias("average_response_time"),
+        round(
+          avg("response_time"),
+          2
+        ).alias("average_response_time"),
 
         min("response_time")
           .alias("minimum_response_time"),
@@ -282,16 +443,20 @@ object LogAnalysis {
         max("response_time")
           .alias("maximum_response_time")
       )
-      .orderBy(desc("total_requests"))
+      .orderBy(
+        desc("total_requests")
+      )
 
     ipRequestAnalysis.show(false)
 
 
     // --------------------------------------------------
-    // 18. IP-WISE ERROR ANALYSIS
+    // 19. IP-WISE ERROR ANALYSIS
     // --------------------------------------------------
 
-    println("\n===== IP-WISE ERROR ANALYSIS =====")
+    println(
+      "\n===== IP-WISE ERROR ANALYSIS ====="
+    )
 
     val ipErrorAnalysis = typedLogDF
       .groupBy("ip")
@@ -314,31 +479,39 @@ object LogAnalysis {
           2
         )
       )
-      .orderBy(desc("error_rate"))
+      .orderBy(
+        desc("error_rate")
+      )
 
     ipErrorAnalysis.show(false)
 
 
     // --------------------------------------------------
-    // 19. TOP REQUESTING IP
+    // 20. TOP REQUESTING IP
     // --------------------------------------------------
 
-    println("\n===== TOP REQUESTING IP =====")
+    println(
+      "\n===== TOP REQUESTING IP ====="
+    )
 
     val topIP = typedLogDF
       .groupBy("ip")
       .count()
-      .orderBy(desc("count"))
+      .orderBy(
+        desc("count")
+      )
       .limit(1)
 
     topIP.show(false)
 
 
     // --------------------------------------------------
-    // 20. IP WITH MOST ERRORS
+    // 21. IP WITH MOST ERRORS
     // --------------------------------------------------
 
-    println("\n===== IP WITH MOST ERRORS =====")
+    println(
+      "\n===== IP WITH MOST ERRORS ====="
+    )
 
     val topErrorIP = typedLogDF
       .filter(
@@ -346,14 +519,16 @@ object LogAnalysis {
       )
       .groupBy("ip")
       .count()
-      .orderBy(desc("count"))
+      .orderBy(
+        desc("count")
+      )
       .limit(1)
 
     topErrorIP.show(false)
 
 
     // --------------------------------------------------
-    // 21. ACCUMULATORS
+    // 22. ACCUMULATORS
     // --------------------------------------------------
 
     val totalRequestsAccumulator =
@@ -378,7 +553,7 @@ object LogAnalysis {
 
 
     // --------------------------------------------------
-    // 22. PROCESS LOGS USING ACCUMULATORS
+    // 23. PROCESS LOGS USING ACCUMULATORS
     // --------------------------------------------------
 
     typedLogDF.foreach { row =>
@@ -395,7 +570,10 @@ object LogAnalysis {
         row.getAs[Int]("response_time")
 
 
-      if (status >= 200 && status < 400) {
+      if (
+        status >= 200 &&
+        status < 400
+      ) {
         successfulRequestsAccumulator.add(1)
       }
 
@@ -415,10 +593,12 @@ object LogAnalysis {
 
 
     // --------------------------------------------------
-    // 23. SPARK SQL ANALYSIS
+    // 24. SPARK SQL ANALYSIS
     // --------------------------------------------------
 
-    println("\n===== SPARK SQL ANALYSIS =====")
+    println(
+      "\n===== SPARK SQL ANALYSIS ====="
+    )
 
     typedLogDF.createOrReplaceTempView(
       "application_logs"
@@ -429,7 +609,9 @@ object LogAnalysis {
     // SQL 1: ERROR LOGS
     // --------------------------------------------------
 
-    println("\n===== SQL ERROR LOGS =====")
+    println(
+      "\n===== SQL ERROR LOGS ====="
+    )
 
     val sqlErrors = spark.sql(
       """
@@ -453,7 +635,9 @@ object LogAnalysis {
     // SQL 2: REQUEST COUNT BY URL
     // --------------------------------------------------
 
-    println("\n===== SQL REQUEST COUNT BY URL =====")
+    println(
+      "\n===== SQL REQUEST COUNT BY URL ====="
+    )
 
     val sqlURLCount = spark.sql(
       """
@@ -481,8 +665,10 @@ object LogAnalysis {
       """
         SELECT
           url,
-          ROUND(AVG(response_time), 2)
-            AS average_response_time
+          ROUND(
+            AVG(response_time),
+            2
+          ) AS average_response_time
         FROM application_logs
         GROUP BY url
         ORDER BY average_response_time DESC
@@ -496,7 +682,9 @@ object LogAnalysis {
     // SQL 4: HTTP STATUS ANALYSIS
     // --------------------------------------------------
 
-    println("\n===== SQL HTTP STATUS ANALYSIS =====")
+    println(
+      "\n===== SQL HTTP STATUS ANALYSIS ====="
+    )
 
     val sqlStatusAnalysis = spark.sql(
       """
@@ -525,8 +713,10 @@ object LogAnalysis {
         SELECT
           ip,
           COUNT(*) AS total_requests,
-          ROUND(AVG(response_time), 2)
-            AS average_response_time
+          ROUND(
+            AVG(response_time),
+            2
+          ) AS average_response_time
         FROM application_logs
         GROUP BY ip
         ORDER BY total_requests DESC
@@ -540,7 +730,9 @@ object LogAnalysis {
     // SQL 6: SLOW REQUESTS
     // --------------------------------------------------
 
-    println("\n===== SQL SLOW REQUESTS =====")
+    println(
+      "\n===== SQL SLOW REQUESTS ====="
+    )
 
     val sqlSlowRequests = spark.sql(
       s"""
@@ -561,10 +753,12 @@ object LogAnalysis {
 
 
     // --------------------------------------------------
-    // 24. ACCUMULATOR SUMMARY
+    // 25. ACCUMULATOR SUMMARY
     // --------------------------------------------------
 
-    println("\n===== ACCUMULATOR SUMMARY =====")
+    println(
+      "\n===== ACCUMULATOR SUMMARY ====="
+    )
 
     println(
       s"Total Requests       : ${totalRequestsAccumulator.value}"
@@ -584,10 +778,49 @@ object LogAnalysis {
 
 
     // --------------------------------------------------
-    // 25. FINAL PROJECT SUMMARY
+    // 26. DATA QUALITY SUMMARY
     // --------------------------------------------------
 
-    println("\n===== FINAL PROJECT SUMMARY =====")
+    println(
+      "\n===== DATA QUALITY SUMMARY ====="
+    )
+
+    println(
+      s"Records Checked      : $dataQualityTotal"
+    )
+
+    println(
+      s"Valid Records        : $validRecordCount"
+    )
+
+    println(
+      s"Invalid Records      : $invalidRecordCount"
+    )
+
+    println(
+      s"Duplicate Records    : $duplicateCount"
+    )
+
+    println(
+      s"Invalid Status       : $invalidStatusCount"
+    )
+
+    println(
+      s"Invalid Response Time: $invalidResponseTimeCount"
+    )
+
+    println(
+      s"Missing Required Data: $invalidRequiredFieldCount"
+    )
+
+
+    // --------------------------------------------------
+    // 27. FINAL PROJECT SUMMARY
+    // --------------------------------------------------
+
+    println(
+      "\n===== FINAL PROJECT SUMMARY ====="
+    )
 
     println(
       s"Total Requests       : $totalRequests"
@@ -609,23 +842,35 @@ object LogAnalysis {
       s"Slow Threshold       : ${broadcastThreshold.value} ms"
     )
 
+    println(
+      s"Valid Records        : $validRecordCount"
+    )
+
+    println(
+      s"Invalid Records      : $invalidRecordCount"
+    )
+
 
     // --------------------------------------------------
-    // 26. SAVE PROCESSED LOG DATA
+    // 28. SAVE PROCESSED LOG DATA
     // --------------------------------------------------
 
-    println("\n===== SAVING OUTPUT FILES =====")
+    println(
+      "\n===== SAVING OUTPUT FILES ====="
+    )
 
     typedLogDF
       .coalesce(1)
       .write
       .mode("overwrite")
       .option("header", "true")
-      .csv("output/processed-logs")
+      .csv(
+        "output/processed-logs"
+      )
 
 
     // --------------------------------------------------
-    // 27. SAVE ERROR LOGS
+    // 29. SAVE ERROR LOGS
     // --------------------------------------------------
 
     errorLogs
@@ -633,11 +878,13 @@ object LogAnalysis {
       .write
       .mode("overwrite")
       .option("header", "true")
-      .csv("output/error-logs")
+      .csv(
+        "output/error-logs"
+      )
 
 
     // --------------------------------------------------
-    // 28. SAVE URL ANALYSIS
+    // 30. SAVE URL ANALYSIS
     // --------------------------------------------------
 
     urlAnalysis
@@ -645,11 +892,13 @@ object LogAnalysis {
       .write
       .mode("overwrite")
       .option("header", "true")
-      .csv("output/url-analysis")
+      .csv(
+        "output/url-analysis"
+      )
 
 
     // --------------------------------------------------
-    // 29. SAVE STATUS ANALYSIS
+    // 31. SAVE STATUS ANALYSIS
     // --------------------------------------------------
 
     statusAnalysis
@@ -657,11 +906,13 @@ object LogAnalysis {
       .write
       .mode("overwrite")
       .option("header", "true")
-      .csv("output/status-analysis")
+      .csv(
+        "output/status-analysis"
+      )
 
 
     // --------------------------------------------------
-    // 30. SAVE IP ANALYSIS
+    // 32. SAVE IP ANALYSIS
     // --------------------------------------------------
 
     ipRequestAnalysis
@@ -669,11 +920,13 @@ object LogAnalysis {
       .write
       .mode("overwrite")
       .option("header", "true")
-      .csv("output/ip-analysis")
+      .csv(
+        "output/ip-analysis"
+      )
 
 
     // --------------------------------------------------
-    // 31. SAVE SLOW REQUESTS
+    // 33. SAVE SLOW REQUESTS
     // --------------------------------------------------
 
     slowRequests
@@ -681,19 +934,22 @@ object LogAnalysis {
       .write
       .mode("overwrite")
       .option("header", "true")
-      .csv("output/slow-requests")
+      .csv(
+        "output/slow-requests"
+      )
 
+
+    // --------------------------------------------------
+    // 34. PROJECT COMPLETED
+    // --------------------------------------------------
 
     println(
       "Analysis outputs saved successfully."
     )
 
-
-    // --------------------------------------------------
-    // 32. PROJECT COMPLETED
-    // --------------------------------------------------
-
-    println("\n===== LOG ANALYSIS COMPLETED =====")
+    println(
+      "\n===== LOG ANALYSIS COMPLETED ====="
+    )
 
     spark.stop()
   }
