@@ -1,46 +1,46 @@
 [info] running (fork) LogAnalysis 
 Using Spark's default log4j profile: org/apache/spark/log4j2-defaults.properties
-26/09/01 09:47:47 WARN Utils: Your hostname, vishnupriya resolves to a loopback address: 127.0.1.1; using 10.255.255.254 instead (on interface lo)
-26/09/01 09:47:47 WARN Utils: Set SPARK_LOCAL_IP if you need to bind to another address
-26/09/01 09:47:47 INFO SparkContext: Running Spark version 3.5.6
-26/09/01 09:47:47 INFO SparkContext: OS info Linux, 6.18.33.2-microsoft-standard-WSL2, amd64
-26/09/01 09:47:47 INFO SparkContext: Java version 17.0.20
-26/09/01 09:47:47 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
-26/09/01 09:47:47 INFO ResourceUtils: ==============================================================
-26/09/01 09:47:47 INFO ResourceUtils: No custom resources configured for spark.driver.
-26/09/01 09:47:47 INFO ResourceUtils: ==============================================================
-26/09/01 09:47:47 INFO SparkContext: Submitted application: Spark Log Analysis
-26/09/01 09:47:47 INFO ResourceProfile: Default ResourceProfile created, executor resources: Map(cores -> name: cores, amount: 1, script: , vendor: , memory -> name: memory, amount: 1024, script: , vendor: , offHeap -> name: offHeap, amount: 0, script: , vendor: ), task resources: Map(cpus -> name: cpus, amount: 1.0)
-26/09/01 09:47:47 INFO ResourceProfile: Limiting resource is cpu
-26/09/01 09:47:47 INFO ResourceProfileManager: Added ResourceProfile id: 0
-26/09/01 09:47:47 INFO SecurityManager: Changing view acls to: vishnupriya
-26/09/01 09:47:47 INFO SecurityManager: Changing modify acls to: vishnupriya
-26/09/01 09:47:47 INFO SecurityManager: Changing view acls groups to: 
-26/09/01 09:47:47 INFO SecurityManager: Changing modify acls groups to: 
-26/09/01 09:47:47 INFO SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users with view permissions: vishnupriya; groups with view permissions: EMPTY; users with modify permissions: vishnupriya; groups with modify permissions: EMPTY
-26/09/01 09:47:47 INFO Utils: Successfully started service 'sparkDriver' on port 41289.
-26/09/01 09:47:47 INFO SparkEnv: Registering MapOutputTracker
-26/09/01 09:47:47 INFO SparkEnv: Registering BlockManagerMaster
-26/09/01 09:47:47 INFO BlockManagerMasterEndpoint: Using org.apache.spark.storage.DefaultTopologyMapper for getting topology information
-26/09/01 09:47:47 INFO BlockManagerMasterEndpoint: BlockManagerMasterEndpoint up
-26/09/01 09:47:47 INFO SparkEnv: Registering BlockManagerMasterHeartbeat
-26/09/01 09:47:47 INFO DiskBlockManager: Created local directory at /tmp/blockmgr-52e57b5b-1fb1-4e9e-b0de-c8ff00237254
-26/09/01 09:47:47 INFO MemoryStore: MemoryStore started with capacity 987.6 MiB
-26/09/01 09:47:47 INFO SparkEnv: Registering OutputCommitCoordinator
-26/09/01 09:47:48 INFO JettyUtils: Start Jetty 0.0.0.0:4040 for SparkUI
-26/09/01 09:47:48 INFO Utils: Successfully started service 'SparkUI' on port 4040.
-26/09/01 09:47:48 INFO Executor: Starting executor ID driver on host 10.255.255.254
-26/09/01 09:47:48 INFO Executor: OS info Linux, 6.18.33.2-microsoft-standard-WSL2, amd64
-26/09/01 09:47:48 INFO Executor: Java version 17.0.20
-26/09/01 09:47:48 INFO Executor: Starting executor with user classpath (userClassPathFirst = false): ''
-26/09/01 09:47:48 INFO Executor: Created or updated repl class loader org.apache.spark.util.MutableURLClassLoader@423b2b62 for default.
-26/09/01 09:47:48 INFO Utils: Successfully started service 'org.apache.spark.network.netty.NettyBlockTransferService' on port 40633.
-26/09/01 09:47:48 INFO NettyBlockTransferService: Server created on 10.255.255.254:40633
-26/09/01 09:47:48 INFO BlockManager: Using org.apache.spark.storage.RandomBlockReplicationPolicy for block replication policy
-26/09/01 09:47:48 INFO BlockManagerMaster: Registering BlockManager BlockManagerId(driver, 10.255.255.254, 40633, None)
-26/09/01 09:47:48 INFO BlockManagerMasterEndpoint: Registering block manager 10.255.255.254:40633 with 987.6 MiB RAM, BlockManagerId(driver, 10.255.255.254, 40633, None)
-26/09/01 09:47:48 INFO BlockManagerMaster: Registered BlockManager BlockManagerId(driver, 10.255.255.254, 40633, None)
-26/09/01 09:47:48 INFO BlockManager: Initialized BlockManager: BlockManagerId(driver, 10.255.255.254, 40633, None)
+26/09/01 09:56:43 WARN Utils: Your hostname, vishnupriya resolves to a loopback address: 127.0.1.1; using 10.255.255.254 instead (on interface lo)
+26/09/01 09:56:43 WARN Utils: Set SPARK_LOCAL_IP if you need to bind to another address
+26/09/01 09:56:44 INFO SparkContext: Running Spark version 3.5.6
+26/09/01 09:56:44 INFO SparkContext: OS info Linux, 6.18.33.2-microsoft-standard-WSL2, amd64
+26/09/01 09:56:44 INFO SparkContext: Java version 17.0.20
+26/09/01 09:56:44 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+26/09/01 09:56:44 INFO ResourceUtils: ==============================================================
+26/09/01 09:56:44 INFO ResourceUtils: No custom resources configured for spark.driver.
+26/09/01 09:56:44 INFO ResourceUtils: ==============================================================
+26/09/01 09:56:44 INFO SparkContext: Submitted application: Spark Log Analysis
+26/09/01 09:56:44 INFO ResourceProfile: Default ResourceProfile created, executor resources: Map(cores -> name: cores, amount: 1, script: , vendor: , memory -> name: memory, amount: 1024, script: , vendor: , offHeap -> name: offHeap, amount: 0, script: , vendor: ), task resources: Map(cpus -> name: cpus, amount: 1.0)
+26/09/01 09:56:44 INFO ResourceProfile: Limiting resource is cpu
+26/09/01 09:56:44 INFO ResourceProfileManager: Added ResourceProfile id: 0
+26/09/01 09:56:44 INFO SecurityManager: Changing view acls to: vishnupriya
+26/09/01 09:56:44 INFO SecurityManager: Changing modify acls to: vishnupriya
+26/09/01 09:56:44 INFO SecurityManager: Changing view acls groups to: 
+26/09/01 09:56:44 INFO SecurityManager: Changing modify acls groups to: 
+26/09/01 09:56:44 INFO SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users with view permissions: vishnupriya; groups with view permissions: EMPTY; users with modify permissions: vishnupriya; groups with modify permissions: EMPTY
+26/09/01 09:56:44 INFO Utils: Successfully started service 'sparkDriver' on port 33475.
+26/09/01 09:56:44 INFO SparkEnv: Registering MapOutputTracker
+26/09/01 09:56:44 INFO SparkEnv: Registering BlockManagerMaster
+26/09/01 09:56:44 INFO BlockManagerMasterEndpoint: Using org.apache.spark.storage.DefaultTopologyMapper for getting topology information
+26/09/01 09:56:44 INFO BlockManagerMasterEndpoint: BlockManagerMasterEndpoint up
+26/09/01 09:56:44 INFO SparkEnv: Registering BlockManagerMasterHeartbeat
+26/09/01 09:56:44 INFO DiskBlockManager: Created local directory at /tmp/blockmgr-147449aa-7bbc-43e2-8d37-3a104142d2f8
+26/09/01 09:56:44 INFO MemoryStore: MemoryStore started with capacity 987.6 MiB
+26/09/01 09:56:44 INFO SparkEnv: Registering OutputCommitCoordinator
+26/09/01 09:56:44 INFO JettyUtils: Start Jetty 0.0.0.0:4040 for SparkUI
+26/09/01 09:56:45 INFO Utils: Successfully started service 'SparkUI' on port 4040.
+26/09/01 09:56:45 INFO Executor: Starting executor ID driver on host 10.255.255.254
+26/09/01 09:56:45 INFO Executor: OS info Linux, 6.18.33.2-microsoft-standard-WSL2, amd64
+26/09/01 09:56:45 INFO Executor: Java version 17.0.20
+26/09/01 09:56:45 INFO Executor: Starting executor with user classpath (userClassPathFirst = false): ''
+26/09/01 09:56:45 INFO Executor: Created or updated repl class loader org.apache.spark.util.MutableURLClassLoader@423b2b62 for default.
+26/09/01 09:56:45 INFO Utils: Successfully started service 'org.apache.spark.network.netty.NettyBlockTransferService' on port 34355.
+26/09/01 09:56:45 INFO NettyBlockTransferService: Server created on 10.255.255.254:34355
+26/09/01 09:56:45 INFO BlockManager: Using org.apache.spark.storage.RandomBlockReplicationPolicy for block replication policy
+26/09/01 09:56:45 INFO BlockManagerMaster: Registering BlockManager BlockManagerId(driver, 10.255.255.254, 34355, None)
+26/09/01 09:56:45 INFO BlockManagerMasterEndpoint: Registering block manager 10.255.255.254:34355 with 987.6 MiB RAM, BlockManagerId(driver, 10.255.255.254, 34355, None)
+26/09/01 09:56:45 INFO BlockManagerMaster: Registered BlockManager BlockManagerId(driver, 10.255.255.254, 34355, None)
+26/09/01 09:56:45 INFO BlockManager: Initialized BlockManager: BlockManagerId(driver, 10.255.255.254, 34355, None)
 ===== SPARK LOG ANALYSIS STARTED =====
 
 ===== RAW LOG DATA =====
@@ -323,6 +323,9 @@ Total Error Logs     : 3
 Slow Requests        : 3
 Slow Threshold       : 400 ms
 
+===== SAVING OUTPUT FILES =====
+Analysis outputs saved successfully.
+
 ===== LOG ANALYSIS COMPLETED =====
-[success] elapsed time: 14 s
+[success] elapsed time: 16 s
 [0J

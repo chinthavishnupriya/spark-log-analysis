@@ -126,9 +126,9 @@ object LogAnalysis {
 
     errorLogs.show(false)
 
-    println(
-      s"Total Error Logs: ${errorLogs.count()}"
-    )
+    val totalErrorLogs = errorLogs.count()
+
+    println(s"Total Error Logs: $totalErrorLogs")
 
 
     // --------------------------------------------------
@@ -144,9 +144,9 @@ object LogAnalysis {
 
     uniqueIPs.show(false)
 
-    println(
-      s"Unique IP Count: ${uniqueIPs.count()}"
-    )
+    val uniqueIPCount = uniqueIPs.count()
+
+    println(s"Unique IP Count: $uniqueIPCount")
 
 
     // --------------------------------------------------
@@ -156,7 +156,9 @@ object LogAnalysis {
     val slowRequestThreshold = 400
 
     val broadcastThreshold =
-      spark.sparkContext.broadcast(slowRequestThreshold)
+      spark.sparkContext.broadcast(
+        slowRequestThreshold
+      )
 
     println("\n===== BROADCAST VARIABLE =====")
 
@@ -245,14 +247,17 @@ object LogAnalysis {
 
     val slowRequests = typedLogDF
       .filter(
-        col("response_time") >= broadcastThreshold.value
+        col("response_time") >=
+          broadcastThreshold.value
       )
       .orderBy(desc("response_time"))
 
     slowRequests.show(false)
 
+    val slowRequestCount = slowRequests.count()
+
     println(
-      s"Slow Request Count: ${slowRequests.count()}"
+      s"Slow Request Count: $slowRequestCount"
     )
 
 
@@ -336,7 +341,9 @@ object LogAnalysis {
     println("\n===== IP WITH MOST ERRORS =====")
 
     val topErrorIP = typedLogDF
-      .filter(col("level") === "ERROR")
+      .filter(
+        col("level") === "ERROR"
+      )
       .groupBy("ip")
       .count()
       .orderBy(desc("count"))
@@ -388,20 +395,20 @@ object LogAnalysis {
         row.getAs[Int]("response_time")
 
 
-      // Successful HTTP request
       if (status >= 200 && status < 400) {
         successfulRequestsAccumulator.add(1)
       }
 
 
-      // Error request
       if (level == "ERROR") {
         errorRequestsAccumulator.add(1)
       }
 
 
-      // Slow request
-      if (responseTime >= broadcastThreshold.value) {
+      if (
+        responseTime >=
+          broadcastThreshold.value
+      ) {
         slowRequestsAccumulator.add(1)
       }
     }
@@ -466,7 +473,9 @@ object LogAnalysis {
     // SQL 3: AVERAGE RESPONSE TIME BY URL
     // --------------------------------------------------
 
-    println("\n===== SQL AVERAGE RESPONSE TIME BY URL =====")
+    println(
+      "\n===== SQL AVERAGE RESPONSE TIME BY URL ====="
+    )
 
     val sqlAverageResponse = spark.sql(
       """
@@ -507,7 +516,9 @@ object LogAnalysis {
     // SQL 5: IP-WISE REQUEST ANALYSIS
     // --------------------------------------------------
 
-    println("\n===== SQL IP-WISE REQUEST ANALYSIS =====")
+    println(
+      "\n===== SQL IP-WISE REQUEST ANALYSIS ====="
+    )
 
     val sqlIPAnalysis = spark.sql(
       """
@@ -540,7 +551,8 @@ object LogAnalysis {
           status,
           response_time
         FROM application_logs
-        WHERE response_time >= ${broadcastThreshold.value}
+        WHERE response_time >=
+          ${broadcastThreshold.value}
         ORDER BY response_time DESC
       """
     )
@@ -582,15 +594,15 @@ object LogAnalysis {
     )
 
     println(
-      s"Unique IP Addresses  : ${uniqueIPs.count()}"
+      s"Unique IP Addresses  : $uniqueIPCount"
     )
 
     println(
-      s"Total Error Logs     : ${errorLogs.count()}"
+      s"Total Error Logs     : $totalErrorLogs"
     )
 
     println(
-      s"Slow Requests        : ${slowRequests.count()}"
+      s"Slow Requests        : $slowRequestCount"
     )
 
     println(
@@ -599,7 +611,86 @@ object LogAnalysis {
 
 
     // --------------------------------------------------
-    // 26. PROJECT COMPLETED
+    // 26. SAVE PROCESSED LOG DATA
+    // --------------------------------------------------
+
+    println("\n===== SAVING OUTPUT FILES =====")
+
+    typedLogDF
+      .coalesce(1)
+      .write
+      .mode("overwrite")
+      .option("header", "true")
+      .csv("output/processed-logs")
+
+
+    // --------------------------------------------------
+    // 27. SAVE ERROR LOGS
+    // --------------------------------------------------
+
+    errorLogs
+      .coalesce(1)
+      .write
+      .mode("overwrite")
+      .option("header", "true")
+      .csv("output/error-logs")
+
+
+    // --------------------------------------------------
+    // 28. SAVE URL ANALYSIS
+    // --------------------------------------------------
+
+    urlAnalysis
+      .coalesce(1)
+      .write
+      .mode("overwrite")
+      .option("header", "true")
+      .csv("output/url-analysis")
+
+
+    // --------------------------------------------------
+    // 29. SAVE STATUS ANALYSIS
+    // --------------------------------------------------
+
+    statusAnalysis
+      .coalesce(1)
+      .write
+      .mode("overwrite")
+      .option("header", "true")
+      .csv("output/status-analysis")
+
+
+    // --------------------------------------------------
+    // 30. SAVE IP ANALYSIS
+    // --------------------------------------------------
+
+    ipRequestAnalysis
+      .coalesce(1)
+      .write
+      .mode("overwrite")
+      .option("header", "true")
+      .csv("output/ip-analysis")
+
+
+    // --------------------------------------------------
+    // 31. SAVE SLOW REQUESTS
+    // --------------------------------------------------
+
+    slowRequests
+      .coalesce(1)
+      .write
+      .mode("overwrite")
+      .option("header", "true")
+      .csv("output/slow-requests")
+
+
+    println(
+      "Analysis outputs saved successfully."
+    )
+
+
+    // --------------------------------------------------
+    // 32. PROJECT COMPLETED
     // --------------------------------------------------
 
     println("\n===== LOG ANALYSIS COMPLETED =====")

@@ -1,0 +1,4 @@
+timestamp,level,ip,url,status,response_time
+2026-09-01 10:15:05,ERROR,192.168.1.12,/login,500,100
+2026-09-01 10:15:10,ERROR,192.168.1.15,/payment,500,450
+2026-09-01 10:15:20,ERROR,192.168.1.12,/payment,500,700
