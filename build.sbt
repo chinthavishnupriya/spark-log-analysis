@@ -22,5 +22,16 @@ lazy val root = (project in file("."))
 
     Test / javaOptions ++= Seq(
       "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED"
+    ),
+
+    Test / testOptions += Tests.Argument(
+      TestFrameworks.ScalaTest,
+      "-o"
+    ),
+
+    Test / testOptions += Tests.Argument(
+      TestFrameworks.ScalaTest,
+      "-u",
+      "target/test-reports"
     )
   )
