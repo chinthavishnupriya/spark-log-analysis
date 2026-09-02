@@ -235,34 +235,84 @@ The project also demonstrates real-time stream processing using Spark DStreams.
 
 ### Streaming Architecture
 
+Data Producer -> TCP Socket -> localhost:9999 -> Spark StreamingContext -> 5-second batches -> DStream
+
+DStream processing is divided into stateless and stateful processing.
+
+### Streaming Applications
+
+The project contains three Spark Streaming applications:
+
+1. `StatelessWordCount.scala` — performs word counting independently for each micro-batch.
+2. `StatefulWordCount.scala` — maintains running word counts across batches using `updateStateByKey`.
+3. `StatefulErrorCounter.scala` — filters `ERROR` records and maintains a cumulative error count across batches.
+
+All streaming applications use:
+
+- Spark Streaming DStreams
+- `StreamingContext`
+- 5-second batch intervals
+- TCP socket input on `localhost:9999`
+- Local Spark execution with `local[*]`
+
+### Stateful Processing
+
+Stateful applications use checkpointing and `updateStateByKey` to maintain information across batches.
+
+The checkpoint directory is excluded from Git because it contains generated runtime state.
+
+### Streaming Test Results
+
+The Stateful Word Count test verified cumulative state:
+
+| Batch | Result |
+|---|---|
+| 1 | `(apple,2)`, `(orange,1)` |
+| 2 | `(apple,3)`, `(orange,1)`, `(banana,1)` |
+| 3 | `(apple,4)`, `(orange,2)`, `(banana,1)` |
+
+The Stateful Error Counter test verified cumulative error tracking:
+
+| Batch | Running ERROR Count |
+|---|---:|
+| 1 | 1 |
+| 2 | 3 |
+| 3 | 4 |
+
+### Streaming Output Files
+
 ```text
-Data Producer
-     |
-     | TCP Socket
-     v
-localhost:9999
-     |
-     v
-Spark StreamingContext
-     |
-     | 5-second batches
-     v
-DStream
-     |
-     +-------------------------+
-     |                         |
-     v                         v
-Stateless Processing      Stateful Processing
-     |                         |
-     v                         +----------------------+
-Word Count                     |                      |
-                               v                      v
-                         Stateful Word Count   Stateful Error Counter
-                               |                      |
-                               +----------+-----------+
-                                          |
-                                          v
-                                  Streaming Output
+output/
+└── streaming/
+    ├── streaming-log-analysis-output.txt
+    ├── stateless/
+    │   └── stateless-word-count-output.txt
+    └── stateful/
+        ├── stateful-word-count-output.txt
+        └── stateful-error-counter-output.txt
+```
+
+### Running the Streaming Applications
+
+Start a TCP producer in one terminal:
+
+```bash
+nc -lk 9999
+```
+
+Then run one of the applications in another terminal:
+
+```bash
+sbt "runMain StatelessWordCount"
+```
+
+```bash
+sbt "runMain StatefulWordCount"
+```
+
+```bash
+sbt "runMain StatefulErrorCounter"
+```
 
 ## Status
 
