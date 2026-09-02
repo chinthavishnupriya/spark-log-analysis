@@ -16,10 +16,13 @@ object LogStreaming {
     val lines = ssc.socketTextStream("localhost", 9999)
 
     var totalProcessedLogs = 0L
+    var batchNumber = 0
 
     lines.foreachRDD { rdd =>
 
       if (!rdd.isEmpty()) {
+
+        batchNumber += 1
 
         val logs = rdd.map { line =>
           val parts = line.split(",")
@@ -66,7 +69,7 @@ object LogStreaming {
           .collect()
 
         println("\n========================================")
-        println("        STREAMING LOG ANALYSIS")
+        println(s"        STREAMING LOG ANALYSIS - BATCH $batchNumber")
         println("========================================")
 
         println(s"Total Logs       : $totalLogs")
