@@ -1,0 +1,29 @@
+===== STATEFUL WORD COUNT TEST =====
+
+Batch 1:
+Input:
+apple orange apple
+
+Result:
+(apple,2)
+(orange,1)
+
+Batch 2:
+Input:
+apple banana
+
+Result:
+(apple,3)
+(orange,1)
+(banana,1)
+
+Batch 3:
+Input:
+orange apple
+
+Result:
+(apple,4)
+(orange,2)
+(banana,1)
+
+===== STATEFUL WORD COUNT TEST COMPLETED =====
