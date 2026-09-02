@@ -1,0 +1,73 @@
+
+========================================
+        STREAMING LOG ANALYSIS - BATCH 1
+========================================
+Total Logs       : 1
+INFO Logs        : 1
+ERROR Logs       : 0
+Slow Requests    : 0
+
+--- Status Code Analysis ---
+200 -> 1
+
+--- IP Address Analysis ---
+192.168.1.10 -> 1
+
+--- URL Analysis ---
+/home -> 1
+========================================
+
+========================================
+        STREAMING LOG ANALYSIS - BATCH 2
+========================================
+Total Logs       : 5
+INFO Logs        : 3
+ERROR Logs       : 2
+Slow Requests    : 0
+
+--- Status Code Analysis ---
+200 -> 3
+500 -> 2
+
+--- IP Address Analysis ---
+192.168.1.10 -> 2
+192.168.1.15 -> 1
+192.168.1.11 -> 1
+192.168.1.12 -> 1
+
+--- URL Analysis ---
+/products -> 2
+/home -> 1
+/payment -> 1
+/login -> 1
+========================================
+
+========================================
+        STREAMING LOG ANALYSIS - BATCH 3
+========================================
+Total Logs       : 4
+INFO Logs        : 3
+ERROR Logs       : 1
+Slow Requests    : 1
+
+--- Status Code Analysis ---
+200 -> 3
+500 -> 1
+
+--- IP Address Analysis ---
+192.168.1.11 -> 1
+192.168.1.12 -> 1
+192.168.1.20 -> 1
+192.168.1.10 -> 1
+
+--- URL Analysis ---
+/login -> 1
+/payment -> 1
+/products -> 2
+========================================
+Total records processed so far: 10
+
+===== ALL EXPECTED LOGS PROCESSED =====
+===== STOPPING SPARK STREAMING =====
+
+===== SPARK STREAMING ANALYSIS FINISHED =====
