@@ -15,6 +15,8 @@ object LogStreaming {
 
     val lines = ssc.socketTextStream("localhost", 9999)
 
+    var totalProcessedLogs = 0L
+
     lines.foreachRDD { rdd =>
 
       if (!rdd.isEmpty()) {
@@ -28,11 +30,13 @@ object LogStreaming {
             parts(2), // IP
             parts(3), // URL
             parts(4).toInt, // status
-            parts(5).toInt  // response time
+            parts(5).toInt // response time
           )
         }
 
         val totalLogs = logs.count()
+
+        totalProcessedLogs += totalLogs
 
         val infoCount =
           logs.filter(_._2 == "INFO").count()
@@ -92,11 +96,27 @@ object LogStreaming {
         }
 
         println("========================================\n")
+
+        println(s"Total records processed so far: $totalProcessedLogs")
+
+        if (totalProcessedLogs >= 10) {
+          println("\n===== ALL EXPECTED LOGS PROCESSED =====")
+          println("===== STOPPING SPARK STREAMING =====")
+
+          ssc.stop(
+            stopSparkContext = true,
+            stopGracefully = true
+          )
+        }
       }
     }
 
     ssc.start()
 
+    println("Streaming context started. Waiting for log data...")
+
     ssc.awaitTermination()
+
+    println("===== SPARK STREAMING ANALYSIS FINISHED =====")
   }
 }
