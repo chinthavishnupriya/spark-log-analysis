@@ -229,6 +229,41 @@ This project provides hands-on practice with:
 2026-09-01 10:15:05,ERROR,192.168.1.12,/login,500,100
 ```
 
+## Spark Streaming
+
+The project also demonstrates real-time stream processing using Spark DStreams.
+
+### Streaming Architecture
+
+```text
+Data Producer
+     |
+     | TCP Socket
+     v
+localhost:9999
+     |
+     v
+Spark StreamingContext
+     |
+     | 5-second batches
+     v
+DStream
+     |
+     +-------------------------+
+     |                         |
+     v                         v
+Stateless Processing      Stateful Processing
+     |                         |
+     v                         +----------------------+
+Word Count                     |                      |
+                               v                      v
+                         Stateful Word Count   Stateful Error Counter
+                               |                      |
+                               +----------+-----------+
+                                          |
+                                          v
+                                  Streaming Output
+
 ## Status
 
 **Project active and working.** The current implementation compiles successfully, runs successfully with Apache Spark 3.5.6, performs data-quality validation and analysis, and generates the documented output datasets.
