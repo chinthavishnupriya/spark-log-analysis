@@ -1,0 +1,29 @@
+===== STATEFUL ERROR COUNTER TEST =====
+
+Batch 1:
+Input:
+INFO User logged in
+ERROR Database connection failed
+
+Result:
+(ERROR,1)
+
+Batch 2:
+Input:
+ERROR Payment failed
+ERROR Server timeout
+INFO Request completed
+
+Result:
+(ERROR,3)
+
+Batch 3:
+Input:
+INFO User request
+ERROR Database unavailable
+INFO Response sent
+
+Result:
+(ERROR,4)
+
+===== STATEFUL ERROR COUNTER TEST COMPLETED =====
